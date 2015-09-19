@@ -13,11 +13,12 @@ typedef size_t heightCoordinate;
 typedef size_t weightCoordinate;
 static const double PROBABILITY = 1/5;
 
-class field {
+class Field {
 public:
     void randomFill(const double probability);
 
-    field(size_t height, size_t weight):height_(height), weight_(weight){
+    Field(){};
+    Field(size_t height, size_t weight):height_(height), weight_(weight){
         randomFill(PROBABILITY);
     };
     size_t getHeight() const {

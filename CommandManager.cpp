@@ -3,11 +3,16 @@
 //
 
 #include "CommandManager.h"
-#include "Exception.h"
+#include "Exeptions.h"
+#include "ThreadManager.h"
+#include "Field.h"
 
 ThreadManager threadManager;
+Field field;
 
-CommandManager::CommandManager(){
+long toInt(const std::string number);
+
+CommandManager::CommandManager() {
     init();
 }
 
@@ -16,11 +21,51 @@ void CommandManager::deleteCommand(std::string commandName) {
 }
 
 void CommandManager::addCommand(std::string commandName, CommandHandler commandHandler) const {
-    commandMap_.insert(commandName, commandHandler);
+    commandMap_[commandName] = commandHandler;
 }
 
-void start(Params params) {
 
+void start(Params params) {
+    if (threadManager.getState_() != ThreadManager::NOT_STARTED) {
+        throw IncorrectCommandWorkException("already started");
+    }
+
+    long numberOfWorkers = toInt(params.at(1));
+    if (params <= 0) {
+        throw IncorrectCommandWorkException("Incorrect number of workers");
+    }
+
+    if (params.size() == 4) {
+        long height = toInt(params.at(2));
+        long weight = toInt(params.at(3));
+        if(height <= 0 || weight <= 0) {
+            throw IncorrectCommandWorkException("Incorrect size of field");
+        }
+        field = Field(height, weight);
+    }
+    threadManager.start(field, numberOfWorkers);
+
+
+
+
+}
+
+
+long toInt(const std::string number) {
+    if (number.size() > 8) {
+        throw ParseIntException("too long for int");
+    };
+    long answer = 0;
+    long balance = 1;
+    for (size_t i = 0; i < number.length(); ++i) {
+        if (number.at(i) >= '0' && number.at(i) <= '9') {
+            answer += (number.at(i) - '0') * balance;
+            balance *= 10;
+        } else {
+            throw ParseIntException("it is not a number");
+        }
+    }
+    return answer;
 }
 
 void status(Params params) {

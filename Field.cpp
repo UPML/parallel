@@ -4,9 +4,9 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include "field.h"
+#include "Field.h"
 
-void field::randomFill(const double probability) {
+void Field::randomFill(const double probability) {
     fieldState.resize(getHeight());
     srand((unsigned int) time(0));
     for (size_t i = 0; i < getHeight(); ++i) {
@@ -17,7 +17,7 @@ void field::randomFill(const double probability) {
     }
 }
 
-void field::print() {
+void Field::print() {
     for (size_t i = 0; i < getHeight(); ++i) {
         for (size_t j = 0; j < getWeight(); ++j) {
             if (isLive(i, j)) {

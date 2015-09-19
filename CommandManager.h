@@ -2,8 +2,8 @@
 // Created by kagudkov on 19.09.15.
 //
 
-#ifndef LIFETHEFIRSTVERSION_COMANDMANAGER_H
-#define LIFETHEFIRSTVERSION_COMANDMANAGER_H
+#ifndef PARALLEL_COMMANDMANAGERM_H
+#define PARALLEL_COMMANDMANAGERM_H
 
 #include <string>
 #include <map>
@@ -24,5 +24,4 @@ public:
     void runCommand(Params params);
 };
 
-
-#endif //LIFETHEFIRSTVERSION_COMANDMANAGER_H
+#endif //PARALLEL_COMMANDMANAGERM_H
