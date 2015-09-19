@@ -3,5 +3,5 @@ project(parallel)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp field.cpp field.h)
 add_executable(parallel ${SOURCE_FILES})
