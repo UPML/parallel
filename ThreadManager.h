@@ -8,6 +8,7 @@
 #include "Field.h"
 
 class ThreadManager {
+public:
     enum State {
         NOT_STARTED,
         STOPPED,
@@ -16,15 +17,15 @@ class ThreadManager {
         FINISHED
     };
 
-public:
+
     const State &getState_() const {
         return state_;
     }
+    void start(Field field, long numberOfWorkers);
 
 private:
     State state_;
 
-    void start(Field field, long numberOfWorkers);
 };
 
 #endif //PARALLEL_MANAGER_H

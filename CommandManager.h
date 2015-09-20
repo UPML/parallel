@@ -19,9 +19,9 @@ private:
     void init();
 
 public:
-    void addCommand(std::string commandName, CommandHandler commandHandler) const;
     void deleteCommand(std::string commandName);
     void runCommand(Params params);
+    void addCommand(std::string commandName, CommandHandler commandHandler);
 };
 
 #endif //PARALLEL_COMMANDMANAGERM_H
