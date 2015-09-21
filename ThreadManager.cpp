@@ -64,7 +64,7 @@ ThreadManager::~ThreadManager() {
     assert(Manager::getState() == Manager::NOT_STARTED || getState() == FINISHED);
 }
 
-void ThreadManager::start(Field &t, int concurrency) {
+void ThreadManager::start(Field &t, size_t concurrency) {
     this->matrix = &t;
     this->concurrency = concurrency;
 

@@ -13,14 +13,16 @@ Thread::~Thread() {
 }
 
 void Thread::start() {
-    if (pthread_create(&descriptor, NULL, threadRunner, (void *) this))
+    if (pthread_create(&descriptor, NULL, threadRunner, (void *) this)) {
         THROW_C_ERROR();
+    }
 }
 
 void Thread::join() {
     assert(!isCurrent());
-    if (pthread_join(descriptor, NULL))
+    if (pthread_join(descriptor, NULL)) {
         THROW_C_ERROR();
+    }
 }
 
 bool Thread::isRunning() const {
@@ -79,8 +81,9 @@ void Mutex::lock() {
 }
 
 void Mutex::unlock() {
-    if (pthread_mutex_unlock(&descriptor))
+    if (pthread_mutex_unlock(&descriptor)) {
         THROW_C_ERROR();
+    }
 }
 
 
@@ -114,39 +117,46 @@ Cond::Cond() {
 Cond::~Cond() { }
 
 void Cond::wait(Mutex &m) {
-    if (pthread_cond_wait(&descriptor, &m.descriptor))
+    if (pthread_cond_wait(&descriptor, &m.descriptor)) {
         THROW_C_ERROR();
+    }
 }
 
 void Cond::wakeOne() {
-    if (pthread_cond_signal(&descriptor))
+    if (pthread_cond_signal(&descriptor)) {
         THROW_C_ERROR();
+    }
 }
 
 void Cond::wakeAll() {
-    if (pthread_cond_broadcast(&descriptor))
+    if (pthread_cond_broadcast(&descriptor)) {
         THROW_C_ERROR();
+    }
 }
 
 
 Semaphore::Semaphore(int value) {
-    if (sem_init(&sem, 0, value)) // 0 stands for 'don't share with other processes'
+    if (sem_init(&sem, 0, value)) { // 0 stands for 'don't share with other processes'
         THROW_C_ERROR();
+    }
 }
 
 Semaphore::~Semaphore() {
-    if (sem_destroy(&sem))
+    if (sem_destroy(&sem)) {
         THROW_C_ERROR();
+    }
 }
 
 void Semaphore::post() {
-    if (sem_post(&sem))
+    if (sem_post(&sem)) {
         THROW_C_ERROR();
+    }
 }
 
 void Semaphore::wait() {
-    if (sem_wait(&sem))
+    if (sem_wait(&sem)) {
         THROW_C_ERROR();
+    }
 }
 
 

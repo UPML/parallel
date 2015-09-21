@@ -48,7 +48,7 @@ public:
 
     ~ThreadManager();
 
-    void start(Field &m, int concurrency);
+    void start(Field &m, size_t concurrency);
 
     ThreadManagerShared &getShared();
 

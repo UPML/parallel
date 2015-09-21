@@ -9,19 +9,22 @@ void Field::randomFill(const double probability) {
     srand((unsigned int) time(0));
     for (size_t i = 0; i < getHeight(); ++i) {
         fieldState.at(i).resize(getWeight());
-        for (Cell cell : fieldState.at(i)) {
-            cell.setLive((rand() / RAND_MAX) < probability);
+        for (size_t j = 0; j < getWeight(); ++j) {
+            double randomNumber = (double(rand()) / RAND_MAX);
+            fieldState.at(i).at(j).setLive(randomNumber < probability);
         }
     }
 }
 
 void Field::print() {
+    std::cout << "Field Size = " << getHeight() << "x" << getWeight() << "\n";
+
     for (size_t i = 0; i < getHeight(); ++i) {
         for (size_t j = 0; j < getWeight(); ++j) {
-            if (isLive(i, j)) {
-                std::cout << "*";
+            if (!isLive(i, j)) {
+                std::cout << ".";
             } else {
-                std::cout << " ";
+                std::cout << "#";
             }
         }
         std::cout << "\n";
@@ -76,7 +79,7 @@ void Field::copyValues(Field field) {
     }
 }
 
-bool Section::isEmpty() {
+bool Section::isEmpty()const {
     return (startWeight == finishWeight || startHeight == finishHeight);
 }
 
@@ -84,7 +87,7 @@ Field::Field(Section section) {
     fieldState.resize(section.getHeight());
     for (size_t i = section.getStartHeight(); i < section.getFinishHeight(); ++i) {
         fieldState.resize(section.getWight());
-        for(size_t j = section.getStartWeight(); j < section.getFinishWeight(); ++j){
+        for (size_t j = section.getStartWeight(); j < section.getFinishWeight(); ++j) {
             setState(i - section.getStartWeight(), j - section.getStartWeight(), section.isLive(i, j));
         }
     }

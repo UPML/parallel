@@ -10,11 +10,10 @@
 
 #include <glob.h>
 #include <vector>
-#include "Manager.h"
 
 typedef size_t heightCoordinate;
 typedef size_t weightCoordinate;
-static const double PROBABILITY = 1 / 5;
+static const double PROBABILITY = 0.2;
 
 class Cell {
     size_t h;
@@ -31,6 +30,53 @@ public:
 private:
     bool live;
 };
+
+class Section;
+
+class Field {
+public:
+    void randomFill(const double probability);
+
+    Field() { };
+
+    Field(size_t height, size_t weight) : height_(height), weight_(weight) {
+        randomFill(PROBABILITY);
+    };
+
+    Field(Section section);
+
+    size_t getHeight() const {
+        return height_;
+    }
+
+    size_t getWeight() const {
+        return weight_;
+    }
+
+    bool isLive(heightCoordinate h, weightCoordinate w) {
+        return fieldState.at(h).at(w).isLive();
+    }
+
+    void setState(heightCoordinate h, weightCoordinate w, bool isLived) {
+        fieldState.at(h).at(w).setLive(isLived);
+    }
+
+    size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
+
+    void print();
+
+    Section getInner();
+
+    std::vector<Section> getBorders();
+
+    void copyValues(Field field);
+
+private:
+    size_t height_;
+    size_t weight_;
+    std::vector<std::vector<Cell>> fieldState;
+};
+
 
 class Section {
 public:
@@ -78,7 +124,7 @@ public:
 
     size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
 
-    bool isEmpty();
+    bool isEmpty()const;
 
     size_t getHeight();
 
@@ -90,51 +136,6 @@ private:
     size_t finishHeight;
     size_t finishWeight;
     Field *field;
-};
-
-
-class Field {
-public:
-    void randomFill(const double probability);
-
-    Field() { };
-
-    Field(size_t height, size_t weight) : height_(height), weight_(weight) {
-        randomFill(PROBABILITY);
-    };
-
-    Field(Section section);
-
-    size_t getHeight() const {
-        return height_;
-    }
-
-    size_t getWeight() const {
-        return weight_;
-    }
-
-    bool isLive(heightCoordinate h, weightCoordinate w) {
-        return fieldState.at(h).at(w).isLive();
-    }
-
-    void setState(heightCoordinate h, weightCoordinate w, bool isLived) {
-        fieldState.at(h).at(w).setLive(isLived);
-    }
-
-    size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
-
-    void print();
-
-    Section getInner();
-
-    std::vector<Section> getBorders();
-
-    void copyValues(Field field);
-
-private:
-    size_t height_;
-    size_t weight_;
-    std::vector<std::vector<Cell>> fieldState;
 };
 
 static const size_t DIRECTION_COUNT = 8;

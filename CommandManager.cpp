@@ -43,14 +43,7 @@ void start(Params params) {
         field = Field(height, weight);
     }
     field.print();
-    Field tmp(field.getHeight(), field.getWeight());
-    Worker().makeIterations(field, tmp);
-    tmp.print();
-    //threadManager.start(field, numberOfWorkers);
-
-
-
-
+    threadManager.start(field, toInt(params.at(1)));
 }
 
 

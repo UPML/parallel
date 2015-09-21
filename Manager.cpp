@@ -62,14 +62,13 @@ void Manager::start()
 }
 
 std::vector<std::vector<int>> Manager::makeNeighbors(const Field &t, const std::vector<Section> &r) {
-    int n = r.size();
+    size_t n = r.size();
     std::vector<std::vector<int> > ret(n);
     for (int i = 0; i < n; ++i)
-        if (!r[i].isEmpty())
+        if (!r.at(i).isEmpty())
         {
             ret[i].push_back((i-1+n)%n);
             ret[i].push_back((i+1)%n);
         }
     return ret;
-    return std::vector<vector< int, allocator < int>>>();
 }
