@@ -10,6 +10,7 @@
 
 #include <glob.h>
 #include <vector>
+#include "Manager.h"
 
 typedef size_t heightCoordinate;
 typedef size_t weightCoordinate;
@@ -31,6 +32,66 @@ private:
     bool live;
 };
 
+class Section {
+public:
+
+    Section(size_t startHeight, size_t startWeight, size_t finishHeight, size_t finishWeight, Field &field)
+            : startHeight(
+            startHeight), startWeight(startWeight), finishHeight(finishHeight), finishWeight(finishWeight),
+              field(&field) { }
+
+    size_t getStartHeight() const {
+        return startHeight;
+    }
+
+    void setStartHeight(size_t start_) {
+        Section::startHeight = start_;
+    }
+
+    size_t getFinishHeight() const {
+        return finishHeight;
+    }
+
+    void setFinishHeight(size_t finish_) {
+        Section::finishHeight = finish_;
+    }
+
+    size_t getStartWeight() const {
+        return startWeight;
+    }
+
+    void setStartWeight(size_t startWeight) {
+        Section::startWeight = startWeight;
+    }
+
+    size_t getFinishWeight() const {
+        return finishWeight;
+    }
+
+    void setFinishWeight(size_t finishWeight) {
+        Section::finishWeight = finishWeight;
+    }
+
+    bool isLive(heightCoordinate h, weightCoordinate w);
+
+    void setState(heightCoordinate h, weightCoordinate w, bool isLived);
+
+    size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
+
+    bool isEmpty();
+
+    size_t getHeight();
+
+    size_t getWight();
+
+private:
+    size_t startHeight;
+    size_t startWeight;
+    size_t finishHeight;
+    size_t finishWeight;
+    Field *field;
+};
+
 
 class Field {
 public:
@@ -41,6 +102,8 @@ public:
     Field(size_t height, size_t weight) : height_(height), weight_(weight) {
         randomFill(PROBABILITY);
     };
+
+    Field(Section section);
 
     size_t getHeight() const {
         return height_;
@@ -57,9 +120,16 @@ public:
     void setState(heightCoordinate h, weightCoordinate w, bool isLived) {
         fieldState.at(h).at(w).setLive(isLived);
     }
+
     size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
 
     void print();
+
+    Section getInner();
+
+    std::vector<Section> getBorders();
+
+    void copyValues(Field field);
 
 private:
     size_t height_;

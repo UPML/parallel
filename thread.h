@@ -4,9 +4,10 @@
 
 #ifndef PARALLEL_THREAD_H
 #define PARALLEL_THREAD_H
-
-#include <pthread.h>
 #include <semaphore.h>
+#include <pthread.h>
+
+#include <time.h>
 #include <memory>
 
 #include "utile.h"

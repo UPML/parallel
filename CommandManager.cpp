@@ -28,7 +28,7 @@ void CommandManager::addCommand(std::string commandName, CommandHandler commandH
 }
 
 void start(Params params) {
-    if (threadManager.getState_() != ThreadManager::NOT_STARTED) {
+    if (threadManager.getState() != ThreadManager::NOT_STARTED) {
         throw IncorrectCommandWorkException("already started");
     }
 

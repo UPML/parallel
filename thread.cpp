@@ -3,55 +3,46 @@
 //
 
 #include "thread.h"
-
 #include <map>
+#include <pthread.h>
 
 using namespace std;
 
-Thread::~Thread()
-{
+Thread::~Thread() {
     assert(!isRunning());
 }
 
-void Thread::start()
-{
-    if (pthread_create(&descriptor, NULL, threadRunner, (void*)this))
+void Thread::start() {
+    if (pthread_create(&descriptor, NULL, threadRunner, (void *) this))
         THROW_C_ERROR();
 }
 
-void Thread::join()
-{
+void Thread::join() {
     assert(!isCurrent());
     if (pthread_join(descriptor, NULL))
         THROW_C_ERROR();
 }
 
-bool Thread::isRunning() const
-{
+bool Thread::isRunning() const {
     return running;
 }
 
-bool Thread::isCurrent() const
-{
+bool Thread::isCurrent() const {
     return pthread_self() == descriptor;
 }
 
-int Thread::getId() const
-{
+int Thread::getId() const {
     return getIdFor(descriptor);
 }
 
-int Thread::getCurrentId()
-{
+int Thread::getCurrentId() {
     return getIdFor(pthread_self());
 }
 
-int Thread::getIdFor(pthread_t p)
-{
+int Thread::getIdFor(pthread_t p) {
     static map<pthread_t, int> ids;
     auto it = ids.find(p);
-    if (it == ids.end())
-    {
+    if (it == ids.end()) {
         int ret = ids.size();
         ids[p] = ret;
         return ret;
@@ -59,140 +50,113 @@ int Thread::getIdFor(pthread_t p)
     return it->second;
 }
 
-Thread::Thread():
-        running(false)
-{}
+Thread::Thread() :
+        running(false) { }
 
-void* Thread::threadRunner(void* me)
-{
-    static_cast<Thread*>(me)->wrappedRun();
+void *Thread::threadRunner(void *me) {
+    static_cast<Thread *>(me)->wrappedRun();
     return NULL;
 }
 
-void Thread::wrappedRun()
-{
+void Thread::wrappedRun() {
     running = true;
-   // debug() << "STARTING (pthreads id " << descriptor << ")";
+    // debug() << "STARTING (pthreads id " << descriptor << ")";
     run();
-   // debug() << "STOPPING (pthreads id " << descriptor << ")";
+    // debug() << "STOPPING (pthreads id " << descriptor << ")";
     running = false;
 }
 
 
-
-Mutex::Mutex()
-{
+Mutex::Mutex() {
     pthread_mutex_t d = PTHREAD_MUTEX_INITIALIZER;
     descriptor = d;
 }
 
-Mutex::~Mutex()
-{}
+Mutex::~Mutex() { }
 
-void Mutex::lock()
-{
+void Mutex::lock() {
     pthread_mutex_lock(&descriptor);
 }
 
-void Mutex::unlock()
-{
+void Mutex::unlock() {
     if (pthread_mutex_unlock(&descriptor))
         THROW_C_ERROR();
 }
 
 
-
-MutexLocker::MutexLocker(AbstractMutex& m):
+MutexLocker::MutexLocker(AbstractMutex &m) :
         m(&m),
-        valid(true)
-{
+        valid(true) {
     m.lock();
 }
 
-MutexLocker::MutexLocker(MutexLocker&& temp):
+MutexLocker::MutexLocker(MutexLocker &&temp) :
         m(temp.m),
-        valid(temp.valid)
-{
+        valid(temp.valid) {
     temp.valid = false;
 }
 
-MutexLocker::~MutexLocker()
-{
+MutexLocker::~MutexLocker() {
     if (isValid())
         m->unlock();
 }
 
-bool MutexLocker::isValid() const
-{
+bool MutexLocker::isValid() const {
     return valid;
 }
 
 
-Cond::Cond()
-{
+Cond::Cond() {
     pthread_cond_t d = PTHREAD_COND_INITIALIZER;
     descriptor = d;
 }
 
-Cond::~Cond()
-{}
+Cond::~Cond() { }
 
-void Cond::wait(Mutex& m)
-{
+void Cond::wait(Mutex &m) {
     if (pthread_cond_wait(&descriptor, &m.descriptor))
         THROW_C_ERROR();
 }
 
-void Cond::wakeOne()
-{
+void Cond::wakeOne() {
     if (pthread_cond_signal(&descriptor))
         THROW_C_ERROR();
 }
 
-void Cond::wakeAll()
-{
+void Cond::wakeAll() {
     if (pthread_cond_broadcast(&descriptor))
         THROW_C_ERROR();
 }
 
 
-
-Semaphore::Semaphore(int value)
-{
+Semaphore::Semaphore(int value) {
     if (sem_init(&sem, 0, value)) // 0 stands for 'don't share with other processes'
         THROW_C_ERROR();
 }
 
-Semaphore::~Semaphore()
-{
+Semaphore::~Semaphore() {
     if (sem_destroy(&sem))
         THROW_C_ERROR();
 }
 
-void Semaphore::post()
-{
+void Semaphore::post() {
     if (sem_post(&sem))
         THROW_C_ERROR();
 }
 
-void Semaphore::wait()
-{
+void Semaphore::wait() {
     if (sem_wait(&sem))
         THROW_C_ERROR();
 }
 
 
+SemaphoreMutex::SemaphoreMutex() :
+        sem(1) { }
 
-SemaphoreMutex::SemaphoreMutex():
-        sem(1)
-{}
-
-void SemaphoreMutex::lock()
-{
+void SemaphoreMutex::lock() {
     sem.wait();
 }
 
-void SemaphoreMutex::unlock()
-{
+void SemaphoreMutex::unlock() {
     sem.post();
 }

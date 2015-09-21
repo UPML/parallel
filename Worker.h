@@ -9,7 +9,7 @@
 
 class Worker{
 public:
-    void makeIterations(Field& current, Field& next);
+    void makeIterations(Section current, Section next);
 };
 
 #endif //PARALLEL_WORKWR_H
