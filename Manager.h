@@ -11,7 +11,7 @@
 #include <vector>
 
 
-class Manager : Thread {
+class Manager : public Thread {
 public:
     static std::vector<Section> chooseDomains(Field &t, int parts);
 

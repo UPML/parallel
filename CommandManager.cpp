@@ -8,9 +8,6 @@
 #include "Field.h"
 #include "Worker.h"
 
-ThreadManager threadManager;
-Field field;
-
 size_t toInt(const std::string number);
 
 CommandManager::CommandManager() {
@@ -22,13 +19,12 @@ void CommandManager::deleteCommand(std::string commandName) {
 }
 
 
-
 void CommandManager::addCommand(std::string commandName, CommandHandler commandHandler) {
     commandMap_[commandName] = commandHandler;
 }
 
-void start(Params params) {
-    if (threadManager.getState() != ThreadManager::NOT_STARTED) {
+void start(Params params, CommandManager &commandManager) {
+    if (commandManager.threadManager.getState() != Manager::NOT_STARTED) {
         throw IncorrectCommandWorkException("already started");
     }
 
@@ -40,10 +36,10 @@ void start(Params params) {
     if (params.size() == 4) {
         size_t height = toInt(params.at(2));
         size_t weight = toInt(params.at(3));
-        field = Field(height, weight);
+        commandManager.field = Field(height, weight);
     }
-    field.print();
-    threadManager.start(field, toInt(params.at(1)));
+    commandManager.field.print();
+    commandManager.threadManager.start(commandManager.field, toInt(params.at(1)));
 }
 
 
@@ -53,7 +49,7 @@ size_t toInt(const std::string number) {
     };
     long answer = 0;
     long balance = 1;
-    for (size_t i = 0; i < number.length(); ++i) {
+    for (int i = number.length() - 1; i >= 0; --i) {
         if (number.at(i) >= '0' && number.at(i) <= '9') {
             answer += (number.at(i) - '0') * balance;
             balance *= 10;
@@ -64,20 +60,56 @@ size_t toInt(const std::string number) {
     return answer;
 }
 
-void status(Params params) {
+void status(Params params, CommandManager &commandManager) {
+    Manager::State state = commandManager.threadManager.getState();
 
+    std::cout << "System state: " << commandManager.threadManager.stateToString(state) << "\n";
+    if (state != Manager::NOT_STARTED && state != Manager::RUNNING) {
+        std::cout << "After iteration " << commandManager.threadManager.getShared().getStop() << ":\n";
+        commandManager.field.print();
+    }
 }
 
-void stop(Params params) {
-
+void stop(Params params, CommandManager &commandManager) {
+    switch (commandManager.threadManager.getState()) {
+        case Manager::RUNNING:
+            //debug(TAG + "stopping");
+            commandManager.threadManager.pauseAll();
+            commandManager.threadManager.wakeWhenStateIs(Manager::STOPPED);
+            // debug(TAG + "awake and stopped");
+            std::cout << "Stopped at " << commandManager.threadManager.getShared().getStop() << "\n";
+            break;
+        default:
+            throw IncorrectCommandWorkException("STOP not running");
+    }
 }
 
-void run(Params params) {
-
+void run(Params params, CommandManager &commandManager) {
+    static const std::string TAG("RUN: ");
+    size_t runs;
+    switch (commandManager.threadManager.getState()) {
+        case Manager::NOT_STARTED:
+            throw IncorrectCommandNameException(
+                    TAG + "task unknown, use START to initialize.");
+        case Manager::STOPPED:
+            runs = toInt(params.at(1));
+            // debug(TAG + "trying to add " + p[0] + " iterations");
+            commandManager.threadManager.runForMore(runs);
+            break;
+        default:
+            throw IncorrectCommandWorkException(TAG + "system is busy");
+    }
 }
 
-void quit(Params params) {
-
+void quit(Params params, CommandManager &commandManager) {
+    if (commandManager.threadManager.getState() != Manager::NOT_STARTED) {
+        //debug(TAG + "manager has started, trying to shut him");
+        commandManager.threadManager.shutdown();
+        commandManager.threadManager.join();
+        //    debug(TAG + "joined the manager");
+    }
+    //debug(TAG + "exiting the program gracefully ----------");
+    exit(0);
 }
 
 void CommandManager::init() {
@@ -90,14 +122,14 @@ void CommandManager::init() {
 
 void CommandManager::runCommand(Params params) {
     std::string commandName = params[0];
-    for(size_t i = 0; i < commandName.size(); ++i) {
+    for (size_t i = 0; i < commandName.size(); ++i) {
         commandName.at(i) = (char) toupper(commandName.at(i));
     }
     std::map<std::string, CommandHandler>::iterator iterator = commandMap_.find(commandName);
     if (iterator == commandMap_.end()) {
         throw IncorrectCommandNameException("Unknouwn command - " + commandName);
     } else {
-        iterator->second(params);
+        iterator->second(params, *this);
     }
 }
 

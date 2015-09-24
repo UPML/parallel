@@ -13,7 +13,7 @@
 
 typedef size_t heightCoordinate;
 typedef size_t weightCoordinate;
-static const double PROBABILITY = 0.2;
+static const double PROBABILITY = 0.33;
 
 class Cell {
     size_t h;
@@ -54,11 +54,11 @@ public:
     }
 
     bool isLive(heightCoordinate h, weightCoordinate w) {
-        return fieldState.at(h).at(w).isLive();
+        return fieldState.at((h + getHeight()) % getHeight()).at((w + getWeight()) % getWeight()).isLive();
     }
 
     void setState(heightCoordinate h, weightCoordinate w, bool isLived) {
-        fieldState.at(h).at(w).setLive(isLived);
+        fieldState.at((h + getHeight()) % getHeight()).at((w + getWeight()) % getWeight()).setLive(isLived);
     }
 
     size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
@@ -124,11 +124,19 @@ public:
 
     size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
 
-    bool isEmpty()const;
+    bool isEmpty() const;
 
     size_t getHeight();
 
     size_t getWight();
+
+    Section getInner();
+
+
+    std::vector<Section> getBorders();
+
+    void copyValue(Field &f);
+    void print();
 
 private:
     size_t startHeight;

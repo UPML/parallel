@@ -5,6 +5,7 @@
 #include "ThreadManager.h"
 #include "Manager.h"
 #include "threadedWorker.h"
+#include "Exceptions.h"
 
 ThreadManagerShared::ThreadManagerShared(ThreadManager &manager) :
         workersWaiting(0),
@@ -69,6 +70,7 @@ void ThreadManager::start(Field &t, size_t concurrency) {
     this->concurrency = concurrency;
 
     Manager::start();
+    wakeWhenStateIsNot(NOT_STARTED);
 }
 
 ThreadManagerShared &ThreadManager::getShared() { return myShared; }
@@ -99,19 +101,16 @@ void ThreadManager::updateState() {
 }
 
 void ThreadManager::run() {
-    Manager::setState(Manager::RUNNING);
+    //Manager::setState(Manager::RUNNING);
     getShared().setWorkersCount(concurrency);
 
     UniqueArray<ThreadedWorker> workers(concurrency);
-    UniqueArray<Field> domains(concurrency);
 
-    Field torus(*matrix);
+//    Field torus(*matrix);
 
-    std::vector<Section> domainRects = chooseDomains(torus, concurrency);
-    for (int i = 0; i < concurrency; ++i)
-        domains[i] = Field(domainRects[i]);
+    std::vector<Section> domains = chooseDomains(*matrix, concurrency);
 
-    std::vector<std::vector<int>> neigs = makeNeighbors(torus, domainRects);
+    std::vector<std::vector<int>> neigs = makeNeighbors(*matrix, domains);
 
     for (int i = 0; i < concurrency; ++i) {
         std::vector<ThreadWorkerShared *> shareds(neigs[i].size());
@@ -184,3 +183,27 @@ void ThreadManager::run() {
     setState(FINISHED);
 }
 
+std::string ThreadManager::stateToString(State state) {
+    switch (getState()) {
+        case NOT_STARTED : {
+            return "NOT STARTED";
+        }
+        case
+                RUNNING: {
+            return "RUNNING";
+        }
+        case
+                STOPPING:{
+            return "STOPPING";
+        }
+        case
+                STOPPED:{
+            return "STOPPED";
+        }
+        case
+                FINISHED: {
+            return "FINISHED";
+        }
+    }
+    throw IncorrectStateException("State is incorrect.");
+}

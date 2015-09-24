@@ -25,8 +25,6 @@ ThreadWorkerShared::ThreadWorkerShared() :
         iterationCalced(0),
         iterationPublished(0) { }
 
-int ThreadWorkerShared::getIterationCalced() const { return iterationCalced; }
-
 int ThreadWorkerShared::getIterationPublished() const { return iterationPublished; }
 
 void ThreadWorkerShared::wakeWhenCalcs(int needed) {
@@ -50,7 +48,7 @@ void ThreadWorkerShared::incIterationPublished() {
 
 void ThreadedWorker::start(
         ThreadManagerShared &manager,
-        Field &domain,
+        Section &domain,
         const std::vector<ThreadWorkerShared *> &neighShared) {
     this->manager = &manager;
     this->neighShared = neighShared;
@@ -65,7 +63,7 @@ void ThreadedWorker::run() {
     //debug("worker started");
 
     size_t h = domain->getHeight();
-    size_t w = domain->getWeight();
+    size_t w = domain->getWight();
 
     Section innerResult = domain->getInner();
     std::vector<Section> resultBorders = domain->getBorders();
@@ -79,20 +77,25 @@ void ThreadedWorker::run() {
  //   debug("worker ready to calc");
     while (manager->wakeWhenNextIterationNeeded(myShared.iterationPublished)) {
         Worker::makeIterations(innerResult, innerTemp);
-
+      //  innerTemp.print();
         for (size_t i = 0; i < nsz; ++i)
             neighShared[i]->wakeWhenPublishes(myShared.iterationPublished);
 
-        for (size_t i = 0; i < resultBorders.size(); ++i)
+        for (size_t i = 0; i < resultBorders.size(); ++i) {
             Worker::makeIterations(resultBorders[i], tempBorders[i]);
+        }
 
+       // tempDomain.print();
         myShared.incIterationCalced();
         for (size_t i = 0; i < nsz; ++i)
             neighShared[i]->wakeWhenCalcs(myShared.iterationCalced);
 
-        domain->copyValues(tempDomain);
+        domain->copyValue(tempDomain);
         myShared.incIterationPublished();
+       // domain->print();
     }
 
     //   debug("worker stopped");
 }
+
+

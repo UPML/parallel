@@ -9,17 +9,18 @@ std::vector<Section> Manager::chooseDomains(Field &t, int parts) {
     if (parts <= 0) {
         throw IncorrectCommandWorkException("Wrong parts number");
     }
-    size_t toOne = t.getHeight() / parts;
-    size_t added = t.getHeight() % parts;
+    size_t toOne = t.getWeight() / parts;
+    size_t added = t.getWeight() % parts;
     std::vector<Section> answer;
     answer.clear();
     size_t currentPosition = 0;
-    while (currentPosition < t.getHeight() - 1) {
+    while (currentPosition < t.getWeight() - 1) {
         if (added > 0) {
-            answer.push_back(Section(currentPosition, 0, currentPosition + toOne, t.getWeight() - 1,  t));
+            answer.push_back(Section(0, currentPosition, t.getHeight() - 1, currentPosition + toOne, t));
             currentPosition++;
+            --added;
         } else {
-            answer.push_back(Section(currentPosition,0,  currentPosition + toOne - 1, t.getWeight() - 1, t));
+            answer.push_back(Section(0, currentPosition, t.getHeight() - 1, currentPosition + toOne - 1, t));
         }
         currentPosition += toOne;
     }
@@ -51,13 +52,12 @@ void Manager::setState(Manager::State s) {
     if (this->s == s)
         return;
     MutexLocker locker(stateMutex);
-   // debug() << "Manager: new state: " << stateStr(s);
+    // debug() << "Manager: new state: " << stateStr(s);
     this->s = s;
     stateCond.wakeAll();
 }
 
-void Manager::start()
-{
+void Manager::start() {
     Thread::start();
 }
 
@@ -65,10 +65,9 @@ std::vector<std::vector<int>> Manager::makeNeighbors(const Field &t, const std::
     size_t n = r.size();
     std::vector<std::vector<int> > ret(n);
     for (int i = 0; i < n; ++i)
-        if (!r.at(i).isEmpty())
-        {
-            ret[i].push_back((i-1+n)%n);
-            ret[i].push_back((i+1)%n);
+        if (!r.at(i).isEmpty()) {
+            ret[i].push_back((i - 1 + n) % n);
+            ret[i].push_back((i + 1) % n);
         }
     return ret;
 }

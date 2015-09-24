@@ -34,7 +34,7 @@ void Field::print() {
 size_t Field::numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w) {
     size_t answer = 0;
     for (size_t i = 0; i < DIRECTION_COUNT; ++i) {
-        if (isLive((h + DIRECTION[i][0]) % getHeight(), (w + DIRECTION[i][1]) % getWeight())) {
+        if (isLive((h + DIRECTION[i][0] + getHeight()) % getHeight(), (w + DIRECTION[i][1] + getWeight()) % getWeight())) {
             answer++;
         };
     }
@@ -42,16 +42,14 @@ size_t Field::numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w) {
 }
 
 Section Field::getInner() {
-    return Section(1, 1, getHeight() - 2, getWeight() - 2, *this);
+    return Section(0, 1, getHeight() - 1, getWeight() - 2, *this);
 }
 
 std::vector<Section> Field::getBorders() {
     std::vector<Section> answer;
     answer.clear();
-    answer.push_back(Section(0, 0, 0, getWeight() - 1, *this));
-    answer.push_back(Section(getHeight() - 1, 0, getHeight() - 1, getWeight() - 1, *this));
-    answer.push_back(Section(1, 0, getHeight() - 2, 0, *this));
-    answer.push_back(Section(1, getWeight() - 1, 1, getWeight() - 1, *this));
+    answer.push_back(Section(0, 0, getHeight() - 1, 0, *this));
+    answer.push_back(Section(0, getWeight() - 1, getHeight() - 1 , getWeight() - 1, *this));
     return answer;
 }
 
@@ -84,9 +82,11 @@ bool Section::isEmpty()const {
 }
 
 Field::Field(Section section) {
+    weight_ = section.getWight();
+    height_ = section.getHeight();
     fieldState.resize(section.getHeight());
     for (size_t i = section.getStartHeight(); i < section.getFinishHeight(); ++i) {
-        fieldState.resize(section.getWight());
+        fieldState.at(i).resize(section.getWight());
         for (size_t j = section.getStartWeight(); j < section.getFinishWeight(); ++j) {
             setState(i - section.getStartWeight(), j - section.getStartWeight(), section.isLive(i, j));
         }
@@ -94,9 +94,35 @@ Field::Field(Section section) {
 }
 
 size_t Section::getHeight() {
-    return getFinishWeight() - getStartWeight();
+    return getFinishHeight() - getStartHeight() + 1;
 }
 
 size_t Section::getWight() {
-    return getFinishWeight() - getStartWeight();
+    return getFinishWeight() - getStartWeight() + 1;
+}
+
+Section Section::getInner() {
+    return Section(getStartHeight(), getStartWeight() + 1, getFinishHeight(), getFinishWeight() - 1, *field);
+}
+
+std::vector<Section> Section::getBorders() {
+    std::vector<Section> bord;
+    bord.clear();
+    bord.push_back(Section(getStartHeight(), getStartWeight(), getFinishHeight(), getStartWeight(), *field));
+    bord.push_back(Section(getStartHeight(), getFinishWeight(), getFinishHeight(), getFinishWeight(), *field));
+    return bord;
+}
+
+void Section::copyValue(Field &f) {
+    for(size_t i = getStartHeight(); i <= getFinishHeight(); ++i) {
+        for(size_t j = getStartWeight(); j <= getFinishWeight(); ++j){
+            field->setState(i, j, f.isLive(i, j));
+        }
+    }
+
+}
+
+void Section::print() {
+    field->print();
+
 }

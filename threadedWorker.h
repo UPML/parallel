@@ -18,8 +18,6 @@ class ThreadWorkerShared {
 public:
     ThreadWorkerShared();
 
-    int getIterationCalced() const;
-
     int getIterationPublished() const;
 
     void wakeWhenCalcs(int iteration);
@@ -46,7 +44,7 @@ class ThreadedWorker : public Thread, protected Worker {
 public:
     void start(
             ThreadManagerShared &manager,
-            Field &domain,
+            Section &domain,
             const std::vector<ThreadWorkerShared *> &neighShared);
 
     ThreadWorkerShared &getShared();
@@ -58,7 +56,7 @@ private:
     ThreadWorkerShared myShared;
 
     ThreadManagerShared *manager;
-    Field *domain;
+    Section *domain;
     std::vector<ThreadWorkerShared *> neighShared;
 };
 

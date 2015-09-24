@@ -60,6 +60,8 @@ public:
 
     void updateState();
 
+    std::string stateToString(State state);
+
 protected:
     void run();
 

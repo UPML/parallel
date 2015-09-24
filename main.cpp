@@ -13,8 +13,9 @@ int main() {
             continue;
         }
         commandManager.runCommand(words);
+//        std::cout << "here\n";
     }
-
+    return 0;
 }
 
 std::vector<std::string> split(std::string line) {

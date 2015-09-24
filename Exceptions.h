@@ -25,4 +25,9 @@ public:
     ParseIntException(const std::string &__arg) : runtime_error(__arg) { }
 };
 
+class IncorrectStateException : public std::runtime_error{
+
+public:
+    IncorrectStateException(const std::string &__arg) : runtime_error(__arg) { }
+};
 #endif //PARALLEL_EXEPTIONS_H
