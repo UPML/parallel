@@ -15,7 +15,7 @@ class Manager : public Thread {
 public:
     static std::vector<Section> chooseDomains(Field &t, int parts);
 
-    static std::vector<std::vector<int> > makeNeighbors(
+    static std::vector<std::vector<size_t > > makeNeighbors(
             const Field &t, const std::vector<Section> &r);
 
     enum State {
@@ -29,10 +29,6 @@ public:
     Manager();
 
     State getState() const;
-
-    std::string getStateStr() const;
-
-    static std::string stateStr(State s);
 
     void wakeWhenStateIs(State s) const;
 

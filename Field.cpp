@@ -8,8 +8,8 @@ void Field::randomFill(const double probability) {
     fieldState.resize(getHeight());
     srand((unsigned int) time(0));
     for (size_t i = 0; i < getHeight(); ++i) {
-        fieldState.at(i).resize(getWeight());
-        for (size_t j = 0; j < getWeight(); ++j) {
+        fieldState.at(i).resize(getWidth());
+        for (size_t j = 0; j < getWidth(); ++j) {
             double randomNumber = (double(rand()) / RAND_MAX);
             fieldState.at(i).at(j).setLive(randomNumber < probability);
         }
@@ -17,10 +17,10 @@ void Field::randomFill(const double probability) {
 }
 
 void Field::print() {
-    std::cout << "Field Size = " << getHeight() << "x" << getWeight() << "\n";
+    std::cout << "Field Size = " << getHeight() << "x" << getWidth() << "\n";
 
     for (size_t i = 0; i < getHeight(); ++i) {
-        for (size_t j = 0; j < getWeight(); ++j) {
+        for (size_t j = 0; j < getWidth(); ++j) {
             if (!isLive(i, j)) {
                 std::cout << ".";
             } else {
@@ -31,10 +31,10 @@ void Field::print() {
     }
 }
 
-size_t Field::numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w) {
+size_t Field::numberOfLiveCellsNearly(heightCoordinate h, widthCoordinate w) {
     size_t answer = 0;
     for (size_t i = 0; i < DIRECTION_COUNT; ++i) {
-        if (isLive((h + DIRECTION[i][0] + getHeight()) % getHeight(), (w + DIRECTION[i][1] + getWeight()) % getWeight())) {
+        if (isLive((h + DIRECTION[i][0] + getHeight()) % getHeight(), (w + DIRECTION[i][1] + getWidth()) % getWidth())) {
             answer++;
         };
     }
@@ -42,47 +42,47 @@ size_t Field::numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w) {
 }
 
 Section Field::getInner() {
-    return Section(0, 1, getHeight() - 1, getWeight() - 2, *this);
+    return Section(0, 1, getHeight() - 1, getWidth() - 2, *this);
 }
 
 std::vector<Section> Field::getBorders() {
     std::vector<Section> answer;
     answer.clear();
     answer.push_back(Section(0, 0, getHeight() - 1, 0, *this));
-    answer.push_back(Section(0, getWeight() - 1, getHeight() - 1 , getWeight() - 1, *this));
+    answer.push_back(Section(0, getWidth() - 1, getHeight() - 1 , getWidth() - 1, *this));
     return answer;
 }
 
-void Section::setState(heightCoordinate h, weightCoordinate w, bool isLived) {
-    field->setState(h + startHeight, w + startWeight, isLived);
+void Section::setState(heightCoordinate h, widthCoordinate w, bool isLived) {
+    field->setState(h + startHeight, w + startWidth, isLived);
 
 
 }
 
-size_t Section::numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w) {
-    field->numberOfLiveCellsNearly(h + startHeight, w + startWeight);
+size_t Section::numberOfLiveCellsNearly(heightCoordinate h, widthCoordinate w) {
+    field->numberOfLiveCellsNearly(h + startHeight, w + startWidth);
 }
 
-bool Section::isLive(heightCoordinate h, weightCoordinate w) {
-    return field->isLive(h + startHeight, w + startWeight);
+bool Section::isLive(heightCoordinate h, widthCoordinate w) {
+    return field->isLive(h + startHeight, w + startWidth);
 }
 
 void Field::copyValues(Field field) {
     fieldState.resize(field.getHeight());
     for (size_t i = 0; i < field.getHeight(); ++i) {
-        fieldState.at(i).resize(getWeight());
-        for (size_t j = 0; j < field.getWeight(); ++j) {
+        fieldState.at(i).resize(getWidth());
+        for (size_t j = 0; j < field.getWidth(); ++j) {
             setState(i, j, field.isLive(i, j));
         }
     }
 }
 
 bool Section::isEmpty()const {
-    return (startWeight == finishWeight || startHeight == finishHeight);
+    return (startWidth == finishWidth || startHeight == finishHeight);
 }
 
 Field::Field(Section section) {
-    weight_ = section.getWight();
+    width_ = section.getWight();
     height_ = section.getHeight();
     fieldState.resize(section.getHeight());
     for (size_t i = section.getStartHeight(); i < section.getFinishHeight(); ++i) {

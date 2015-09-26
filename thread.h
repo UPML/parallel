@@ -29,8 +29,6 @@ public:
 protected:
     Thread();
 
-    void exit();
-
     void start();
     virtual void run() = 0;
 

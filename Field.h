@@ -12,7 +12,7 @@
 #include <vector>
 
 typedef size_t heightCoordinate;
-typedef size_t weightCoordinate;
+typedef size_t widthCoordinate;
 static const double PROBABILITY = 0.33;
 
 class Cell {
@@ -39,7 +39,7 @@ public:
 
     Field() { };
 
-    Field(size_t height, size_t weight) : height_(height), weight_(weight) {
+    Field(size_t height, size_t weight) : height_(height), width_(weight) {
         randomFill(PROBABILITY);
     };
 
@@ -49,19 +49,19 @@ public:
         return height_;
     }
 
-    size_t getWeight() const {
-        return weight_;
+    size_t getWidth() const {
+        return width_;
     }
 
-    bool isLive(heightCoordinate h, weightCoordinate w) {
-        return fieldState.at((h + getHeight()) % getHeight()).at((w + getWeight()) % getWeight()).isLive();
+    bool isLive(heightCoordinate h, widthCoordinate w) {
+        return fieldState.at((h + getHeight()) % getHeight()).at((w + getWidth()) % getWidth()).isLive();
     }
 
-    void setState(heightCoordinate h, weightCoordinate w, bool isLived) {
-        fieldState.at((h + getHeight()) % getHeight()).at((w + getWeight()) % getWeight()).setLive(isLived);
+    void setState(heightCoordinate h, widthCoordinate w, bool isLived) {
+        fieldState.at((h + getHeight()) % getHeight()).at((w + getWidth()) % getWidth()).setLive(isLived);
     }
 
-    size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
+    size_t numberOfLiveCellsNearly(heightCoordinate h, widthCoordinate w);
 
     void print();
 
@@ -73,7 +73,7 @@ public:
 
 private:
     size_t height_;
-    size_t weight_;
+    size_t width_;
     std::vector<std::vector<Cell>> fieldState;
 };
 
@@ -83,7 +83,7 @@ public:
 
     Section(size_t startHeight, size_t startWeight, size_t finishHeight, size_t finishWeight, Field &field)
             : startHeight(
-            startHeight), startWeight(startWeight), finishHeight(finishHeight), finishWeight(finishWeight),
+            startHeight), startWidth(startWeight), finishHeight(finishHeight), finishWidth(finishWeight),
               field(&field) { }
 
     size_t getStartHeight() const {
@@ -103,26 +103,26 @@ public:
     }
 
     size_t getStartWeight() const {
-        return startWeight;
+        return startWidth;
     }
 
     void setStartWeight(size_t startWeight) {
-        Section::startWeight = startWeight;
+        Section::startWidth = startWeight;
     }
 
     size_t getFinishWeight() const {
-        return finishWeight;
+        return finishWidth;
     }
 
     void setFinishWeight(size_t finishWeight) {
-        Section::finishWeight = finishWeight;
+        Section::finishWidth = finishWeight;
     }
 
-    bool isLive(heightCoordinate h, weightCoordinate w);
+    bool isLive(heightCoordinate h, widthCoordinate w);
 
-    void setState(heightCoordinate h, weightCoordinate w, bool isLived);
+    void setState(heightCoordinate h, widthCoordinate w, bool isLived);
 
-    size_t numberOfLiveCellsNearly(heightCoordinate h, weightCoordinate w);
+    size_t numberOfLiveCellsNearly(heightCoordinate h, widthCoordinate w);
 
     bool isEmpty() const;
 
@@ -140,9 +140,9 @@ public:
 
 private:
     size_t startHeight;
-    size_t startWeight;
+    size_t startWidth;
     size_t finishHeight;
-    size_t finishWeight;
+    size_t finishWidth;
     Field *field;
 };
 

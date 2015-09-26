@@ -2,8 +2,8 @@
 // Created by kagudkov on 19.09.15.
 //
 
-#ifndef PARALLEL_EXEPTION_H
-#define PARALLEL_EXEPTION_H
+#ifndef PARALLEL_EXCEPTION_H
+#define PARALLEL_EXCEPTION_H
 
 #include <stdexcept>
 #include <string>
@@ -30,4 +30,4 @@ class IncorrectStateException : public std::runtime_error{
 public:
     IncorrectStateException(const std::string &__arg) : runtime_error(__arg) { }
 };
-#endif //PARALLEL_EXEPTIONS_H
+#endif //PARALLEL_EXCEPTIONS_H

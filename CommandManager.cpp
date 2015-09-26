@@ -47,7 +47,7 @@ size_t toInt(const std::string number) {
     if (number.size() > 8) {
         throw ParseIntException("too long for int");
     };
-    long answer = 0;
+    size_t answer = 0;
     long balance = 1;
     for (int i = number.length() - 1; i >= 0; --i) {
         if (number.at(i) >= '0' && number.at(i) <= '9') {

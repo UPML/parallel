@@ -110,7 +110,7 @@ void ThreadManager::run() {
 
     std::vector<Section> domains = chooseDomains(*matrix, concurrency);
 
-    std::vector<std::vector<int>> neigs = makeNeighbors(*matrix, domains);
+    std::vector<std::vector<size_t >> neigs = makeNeighbors(*matrix, domains);
 
     for (int i = 0; i < concurrency; ++i) {
         std::vector<ThreadWorkerShared *> shareds(neigs[i].size());
