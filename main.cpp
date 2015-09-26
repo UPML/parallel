@@ -13,7 +13,6 @@ int main() {
             continue;
         }
         commandManager.runCommand(words);
-//        std::cout << "here\n";
     }
     return 0;
 }

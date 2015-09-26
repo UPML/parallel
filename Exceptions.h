@@ -30,4 +30,9 @@ class IncorrectStateException : public std::runtime_error{
 public:
     IncorrectStateException(const std::string &__arg) : runtime_error(__arg) { }
 };
+class ReadFileException : public std::runtime_error{
+
+public:
+    ReadFileException(const std::string &__arg) : runtime_error(__arg) { }
+};
 #endif //PARALLEL_EXCEPTIONS_H

@@ -33,6 +33,10 @@ void start(Params params, CommandManager &commandManager) {
         throw IncorrectCommandWorkException("Incorrect number of workers");
     }
 
+    if(params.size() == 3){
+        commandManager.field = Field(params.at(2));
+    }
+
     if (params.size() == 4) {
         size_t height = toInt(params.at(2));
         size_t weight = toInt(params.at(3));
@@ -49,9 +53,9 @@ size_t toInt(const std::string number) {
     };
     size_t answer = 0;
     long balance = 1;
-    for (int i = number.length() - 1; i >= 0; --i) {
-        if (number.at(i) >= '0' && number.at(i) <= '9') {
-            answer += (number.at(i) - '0') * balance;
+    for (int i = (int) (number.length() - 1); i >= 0; --i) {
+        if (number.at((unsigned long) i) >= '0' && number.at((unsigned long) i) <= '9') {
+            answer += (number.at((unsigned long) i) - '0') * balance;
             balance *= 10;
         } else {
             throw ParseIntException("it is not a number");

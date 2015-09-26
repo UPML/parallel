@@ -77,7 +77,7 @@ void ThreadedWorker::run() {
  //   debug("worker ready to calc");
     while (manager->wakeWhenNextIterationNeeded(myShared.iterationPublished)) {
         Worker::makeIterations(innerResult, innerTemp);
-      //  innerTemp.print();
+       // innerTemp.print();
         for (size_t i = 0; i < nsz; ++i)
             neighShared[i]->wakeWhenPublishes(myShared.iterationPublished);
 
@@ -90,9 +90,9 @@ void ThreadedWorker::run() {
         for (size_t i = 0; i < nsz; ++i)
             neighShared[i]->wakeWhenCalcs(myShared.iterationCalced);
 
-        domain->copyValue(tempDomain);
+        domain->copyValue(tempDomain, domain->getFinishHeight(), domain->getStartWeight());
         myShared.incIterationPublished();
-       // domain->print();
+  //      domain->print();
     }
 
     //   debug("worker stopped");

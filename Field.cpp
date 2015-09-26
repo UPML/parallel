@@ -2,7 +2,10 @@
 // Created by kagudkov on 19.09.15.
 //
 
+#include <fstream>
+#include <assert.h>
 #include "Field.h"
+#include "Exceptions.h"
 
 void Field::randomFill(const double probability) {
     fieldState.resize(getHeight());
@@ -33,8 +36,10 @@ void Field::print() {
 
 size_t Field::numberOfLiveCellsNearly(heightCoordinate h, widthCoordinate w) {
     size_t answer = 0;
-    for (size_t i = 0; i < DIRECTION_COUNT; ++i) {
-        if (isLive((h + DIRECTION[i][0] + getHeight()) % getHeight(), (w + DIRECTION[i][1] + getWidth()) % getWidth())) {
+
+    for (size_t i = 0; i < DIRECTION.size(); ++i) {
+        if (isLive((h + DIRECTION[i][0] + getHeight()) % getHeight(),
+                   (w + DIRECTION[i][1] + getWidth()) % getWidth())) {
             answer++;
         };
     }
@@ -49,7 +54,7 @@ std::vector<Section> Field::getBorders() {
     std::vector<Section> answer;
     answer.clear();
     answer.push_back(Section(0, 0, getHeight() - 1, 0, *this));
-    answer.push_back(Section(0, getWidth() - 1, getHeight() - 1 , getWidth() - 1, *this));
+    answer.push_back(Section(0, getWidth() - 1, getHeight() - 1, getWidth() - 1, *this));
     return answer;
 }
 
@@ -77,7 +82,7 @@ void Field::copyValues(Field field) {
     }
 }
 
-bool Section::isEmpty()const {
+bool Section::isEmpty() const {
     return (startWidth == finishWidth || startHeight == finishHeight);
 }
 
@@ -113,10 +118,12 @@ std::vector<Section> Section::getBorders() {
     return bord;
 }
 
-void Section::copyValue(Field &f) {
-    for(size_t i = getStartHeight(); i <= getFinishHeight(); ++i) {
-        for(size_t j = getStartWeight(); j <= getFinishWeight(); ++j){
-            field->setState(i, j, f.isLive(i, j));
+void Section::copyValue(Field &f, int startHeight, int startWidth) {
+    for (size_t i = 0; i < f.getHeight(); ++i) {
+        for (size_t j = 0; j < f.getWidth(); ++j) {
+            int h = i + startHeight;
+            int w = j + startWidth;
+            field->setState(h + 1 , w + 1, f.isLive(i, j));
         }
     }
 
@@ -125,4 +132,51 @@ void Section::copyValue(Field &f) {
 void Section::print() {
     field->print();
 
+}
+
+Field::Field(const std::string& fileName) {
+    std::ifstream input(fileName);
+    std::string line;
+    setWidth_(0);
+    setHeight_(0);
+    while (getline(input, line)) {
+        std::vector<Cell> newLine = parse(line);
+        if(fieldState.size() == 0) {
+            setWidth_(newLine.size());
+        } else {
+            if(getWidth() != newLine.size()) {
+                throw ReadFileException("Different string length in file");
+            }
+        }
+        fieldState.push_back(newLine);
+    }
+    setHeight_(fieldState.size());
+    assert(getHeight() * getWidth() != 0);
+}
+
+std::vector<Cell> Field::parse(std::string line) {
+    std::vector<Cell> newLine;
+    newLine.clear();
+    for (size_t i = 0; i < line.size(); ++i) {
+        if (i % 2 == 0) {
+            switch (line.at(i)) {
+                case '#' : {
+                    newLine.push_back(Cell(true));
+                    continue;
+                }
+                case '.': {
+                    newLine.push_back(Cell(false));
+                    continue;
+                }
+                default:{
+                    throw ReadFileException("Inncorrect symbol");
+                }
+            }
+        } else {
+            if(line.at(i) != ',') {
+                throw  ReadFileException("Expected \",\"");
+            }
+        }
+    }
+    return newLine;
 }

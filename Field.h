@@ -23,6 +23,10 @@ public:
         return live;
     }
 
+    Cell(bool live) : live(live) { }
+
+    Cell() { };
+
     void setLive(bool live) {
         Cell::live = live;
     }
@@ -35,6 +39,8 @@ class Section;
 
 class Field {
 public:
+    Field(const std::string& fileName);
+
     void randomFill(const double probability);
 
     Field() { };
@@ -51,6 +57,14 @@ public:
 
     size_t getWidth() const {
         return width_;
+    }
+
+    void setWidth_(size_t width_) {
+        Field::width_ = width_;
+    }
+
+    void setHeight_(size_t height_) {
+        Field::height_ = height_;
     }
 
     bool isLive(heightCoordinate h, widthCoordinate w) {
@@ -75,6 +89,8 @@ private:
     size_t height_;
     size_t width_;
     std::vector<std::vector<Cell>> fieldState;
+
+    std::vector<Cell> parse(std::string line);
 };
 
 
@@ -135,7 +151,7 @@ public:
 
     std::vector<Section> getBorders();
 
-    void copyValue(Field &f);
+    void copyValue(Field &f, int startHeight, int startWidth);
     void print();
 
 private:
@@ -146,8 +162,7 @@ private:
     Field *field;
 };
 
-static const size_t DIRECTION_COUNT = 8;
-static const int DIRECTION[8][2] = {
+static const std::vector<std::vector<int> > DIRECTION = {
         {-1, -1},
         {-1, 0},
         {-1, 1},
