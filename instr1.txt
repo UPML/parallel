@@ -2,12 +2,3 @@ start 8 1000 1000
 run 1000
 block
 quit
-100
-time 1 = 108
-time 2 = 74
-time 4 = 52
-1000 
-time 1 = 1452  
-time 2 = 721    2,01
-time 4 = 495    2,93
-time 8 = 

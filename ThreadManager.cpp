@@ -16,8 +16,10 @@ bool ThreadManagerShared::wakeWhenNextIterationNeeded(int have) {
     MutexLocker locker(stopMutex);
     if (stop != -1 && stop <= have) {
         incWorkersWaiting();
-        while (stop != -1 && stop <= have)
-            stopCond.wait(stopMutex);
+        while (stop != -1 && stop <= have) {
+            Cond &cond = stopCond;
+            cond.wait(stopMutex);
+        }
         decWorkersWaiting();
     }
     return stop != -1;
