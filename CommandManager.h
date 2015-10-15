@@ -28,6 +28,17 @@ private:
     void init();
 
 public:
+    int getTime() const {
+        return time;
+    }
+
+    void setTime(int time) {
+        CommandManager::time = time;
+    }
+
+private:
+    int time;
+public:
     ThreadManager threadManager;
     Field field;
     void deleteCommand(std::string commandName);

@@ -33,7 +33,7 @@ void start(Params params, CommandManager &commandManager) {
         throw IncorrectCommandWorkException("Incorrect number of workers");
     }
 
-    if(params.size() == 3){
+    if (params.size() == 3) {
         commandManager.field = Field(params.at(2));
     }
 
@@ -42,7 +42,7 @@ void start(Params params, CommandManager &commandManager) {
         size_t weight = toInt(params.at(3));
         commandManager.field = Field(height, weight);
     }
-    commandManager.field.print();
+//    commandManager.field.print();
     commandManager.threadManager.start(commandManager.field, toInt(params.at(1)));
 }
 
@@ -113,7 +113,16 @@ void quit(Params params, CommandManager &commandManager) {
         //    debug(TAG + "joined the manager");
     }
     //debug(TAG + "exiting the program gracefully ----------");
+    std::cout << time(NULL) - commandManager.getTime();
     exit(0);
+}
+
+void block(Params params, CommandManager &commandManager) {
+    static const std::string TAG("BLOCK: ");
+    if (commandManager.threadManager.getState() == Manager::NOT_STARTED) {
+        throw IncorrectCommandWorkException(TAG + "not running");
+    }
+    commandManager.threadManager.wakeWhenStateIs(Manager::STOPPED);
 }
 
 void CommandManager::init() {
@@ -122,6 +131,8 @@ void CommandManager::init() {
     addCommand("STOP", stop);
     addCommand("RUN", run);
     addCommand("QUIT", quit);
+    addCommand("BLOCK", block);
+
 }
 
 void CommandManager::runCommand(Params params) {

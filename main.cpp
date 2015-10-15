@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <time.h>
 #include "CommandManager.h"
 
 CommandManager commandManager;
@@ -7,7 +9,9 @@ std::vector<std::string> split(std::string line);
 
 int main() {
     std::string newLine;
-    while (getline(std::cin, newLine)) {
+    std::ifstream F("/home/kagudkov/parallel/instr1.txt");
+    commandManager.setTime((int) time(NULL));
+    while (getline(F, newLine)) {
         std::vector<std::string> words = split(newLine);
         if (words.empty()) {
             continue;
