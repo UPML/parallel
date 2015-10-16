@@ -11,7 +11,7 @@ int main() {
     std::string newLine;
     std::ifstream F("/home/kagudkov/parallel/instr1.txt");
     commandManager.setTime((int) time(NULL));
-    while (getline(F, newLine)) {
+    while (getline(std::cin, newLine)) {
         std::vector<std::string> words = split(newLine);
         if (words.empty()) {
             continue;

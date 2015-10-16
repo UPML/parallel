@@ -42,7 +42,7 @@ void start(Params params, CommandManager &commandManager) {
         size_t weight = toInt(params.at(3));
         commandManager.field = Field(height, weight);
     }
-//    commandManager.field.print();
+    commandManager.field.print();
     commandManager.threadManager.start(commandManager.field, toInt(params.at(1)));
 }
 
